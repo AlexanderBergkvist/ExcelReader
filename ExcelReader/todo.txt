@@ -1,0 +1,5 @@
+Autorotator: Om bilden är sned måste jag hitta ett sätt att göra den mindre sned...
+
+Ändra kroppningen: Istället för att dra ut raka linjer som är perfekt parallella
+kanske jag kan få avända dom gamla linjerna och croppa enligt dom, men då kommer
+kroppningen inte längra bli unison.
