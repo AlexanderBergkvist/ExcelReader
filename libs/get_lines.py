@@ -7,6 +7,20 @@ from math import ceil
 LINE_SPACE_VERTICAL = 70
 LINE_SPACE_HORIZONTAL = 25
 
+def reformat_lines_vert(lines):
+    for line in lines:
+        [x1,y1,x2,y2] = line[0]
+        if y1 > y2:
+            line[0] = [x2,y2,x1,y1]
+    return lines
+
+def reformat_lines_hor(lines):
+    for line in lines:
+        [x1,y1,x2,y2] = line[0]
+        if x1 > x2:
+            line[0] = [x2,y2,x1,y1]
+    return lines
+
 def remove_duplicates(lines, direction):
     length = len(lines)
     if direction == 'vertical':
@@ -17,10 +31,10 @@ def remove_duplicates(lines, direction):
                 if z >= length:
                     break
                 ix1,y1,ix2,y2 = lines[i][0]
-                zx1,_,zx2,_ = lines[z][0]
+                zx1,zy1,zx2,zy2 = lines[z][0]
 
                 if abs(ix1 - zx1) < LINE_SPACE_VERTICAL and abs(ix2 - zx2) < LINE_SPACE_VERTICAL:
-                    lines[i][0] = [ceil((ix1+zx1)/2), y1, ceil((ix2+zx2)/2), y2] #Remove one line and make the other one average of both
+                    lines[i][0] = [ceil((ix1+zx1)/2), min(y1,zy1), ceil((ix2+zx2)/2), max(y2,zy2)] #Remove one line and make the other one average of both
                     lines = np.delete(lines,z,0)
                     length -=1
                     continue
@@ -36,10 +50,10 @@ def remove_duplicates(lines, direction):
                 if z >= length:
                     break
                 x1,iy1,x2,iy2 = lines[i][0]
-                _,zy1,_,zy2 = lines[z][0]
+                zx1,zy1,zx2,zy2 = lines[z][0]
 
                 if abs(iy1 - zy1) < LINE_SPACE_HORIZONTAL and abs(iy2 - zy2) < LINE_SPACE_HORIZONTAL:
-                    lines[i][0] = [x1,ceil((iy1+zy1)/2), x2, ceil((iy2+zy2))/2]
+                    lines[i][0] = [min(x1,zx1),ceil((iy1+zy1)/2), max(x2,zx2), ceil((iy2+zy2))/2]
                     lines = np.delete(lines,z,0)
                     length -=1
                     continue
@@ -85,15 +99,17 @@ def get_lines(img, vert_line_size, hor_line_size,iter):
     (dilv,erodev) = extract_vertical(edges, [])
     for i in range(iter):
         (dilv,erodev) = extract_vertical([], erodev)
-    show_image(erodev)
+    show_image(erodev, "Vertical erodes")
     linesv = cv2.HoughLinesP(erodev,1,np.pi/180,100,vert_line_size,10)
+    linesv = reformat_lines_vert(linesv)
     linesv = remove_duplicates(linesv, 'vertical')
     #horizontall
     (dilh,erodeh) = extract_horizontall(edges, [])
     for i in range(iter):
         (dilh,erodeh) = extract_horizontall([], erodeh)
-    show_image(erodeh)
+    show_image(erodeh, "Horizontall erodes")
     linesh = cv2.HoughLinesP(erodeh,1,np.pi/180,70,hor_line_size,10)
+    linesh = reformat_lines_hor(linesh)
     linesh = remove_duplicates(linesh, 'horizontal')
 
     return linesv,linesh
@@ -106,15 +122,11 @@ def get_lines_wo(img, vert_line_size, hor_line_size,iter):
     (dilv,erodev) = extract_vertical(edges, [])
     for i in range(iter):
         (dilv,erodev) = extract_vertical([], erodev)
-    #show_image(erodev)
     linesv = cv2.HoughLinesP(erodev,1,np.pi/180,100,vert_line_size,10)
-    #linesv = remove_duplicates(linesv, 'vertical')
     #horizontall
     (dilh,erodeh) = extract_horizontall(edges, [])
     for i in range(iter):
         (dilh,erodeh) = extract_horizontall([], erodeh)
-    #show_image(erodeh)
     linesh = cv2.HoughLinesP(erodeh,1,np.pi/180,70,hor_line_size,10)
-    #linesh = remove_duplicates(linesh, 'horizontal')
 
     return linesv,linesh

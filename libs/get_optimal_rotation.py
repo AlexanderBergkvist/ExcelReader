@@ -27,7 +27,7 @@ def gather_score(linesh, linesv):
         if x2 < x1:
             print("hor weird format")
             continue
-        rotate_score -= ((y1 - y2) / 2)  # sqrt((y1 - y2)**2 + (x1 - x2)**2)
+        rotate_score -= ((y1 - y2) / 2)  # / 2 to make horizontall score less impactfull
     for line in linesv:
         [x1, y1, x2, y2] = line[0]
         if y2 > y1:
@@ -47,6 +47,7 @@ def find_optimal_rotation(img, imgc, goal):
     rotate_score = 1000
     old_rotate_score = gather_score(linesh, linesv)
     increment = 0.08
+    additional_increment = 0
     direction = 1
     picture_integrity = 0
     picture_integrity_max_value = 2
@@ -62,20 +63,24 @@ def find_optimal_rotation(img, imgc, goal):
             # show_image(imgc)
             # show_image(img)
             rotate_score = gather_score(linesh, linesv)
-            if abs(rotate_score) < goal:
+            if 0 < rotate_score and rotate_score < goal: #abs(rotate_score) < goal: # Behöver detta vara positivt
                 done = True
+                print("\n\nrotate_score " + str(rotate_score))
+                print("old rotate " + str(old_rotate_score))
                 print("done mofo!")
                 break
 
             elif abs(rotate_score) < 0.15:
-                increment = 0.003
+                increment = 0.003 - additional_increment
             elif abs(rotate_score) < 0.2:
-                increment = 0.005
+                increment = 0.005 - additional_increment
             elif abs(rotate_score) < 0.5:
-                increment = 0.02
+                increment = 0.02 - additional_increment
             elif abs(rotate_score) < 1:
-                increment = 0.04
-
+                increment = 0.04 - additional_increment
+            additional_increment +=0.00005
+            if increment < 0.0001:
+                increment = 0.0001
             print("\n\nrotate_score " + str(rotate_score))
             print("old rotate " + str(old_rotate_score))
             print(increment)
@@ -89,6 +94,6 @@ def find_optimal_rotation(img, imgc, goal):
                 imgc = rotateImage(imgc, increment)
                 increment_acc += increment
         except:
-            show_image(img)
-    show_image(imgc)
+            show_image(img, "Image when crashed")
+    show_image(imgc, "Optimal rotation")
     return img, imgc
