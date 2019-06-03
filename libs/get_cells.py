@@ -27,7 +27,7 @@ def get_cells(img,linesv, linesh):
                 continue
             cell = img[pointsh[i]+OFFSET:pointsh[i+1]+OFFSET, pointsv[x]:pointsv[x+1]].copy()
             #cell = cv2.resize(cell, (0,0), fx=7, fy=7)
-            #show_image(cell)
+            #show_image(cell,"hi")
             cell = cv2.GaussianBlur(cell,(7,7),0)
             cell = cv2.addWeighted(cell, 2.4, np.zeros(cell.shape, cell.dtype), 0, -180) #2,-120
             kernel = np.array([[-1,-1,-1],

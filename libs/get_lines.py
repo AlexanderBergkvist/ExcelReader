@@ -99,7 +99,7 @@ def get_lines(img, vert_line_size, hor_line_size,iter):
     (dilv,erodev) = extract_vertical(edges, [])
     for i in range(iter):
         (dilv,erodev) = extract_vertical([], erodev)
-    show_image(erodev, "Vertical erodes")
+    #show_image(erodev, "Vertical erodes")
     linesv = cv2.HoughLinesP(erodev,1,np.pi/180,100,vert_line_size,10)
     linesv = reformat_lines_vert(linesv)
     linesv = remove_duplicates(linesv, 'vertical')
@@ -107,7 +107,7 @@ def get_lines(img, vert_line_size, hor_line_size,iter):
     (dilh,erodeh) = extract_horizontall(edges, [])
     for i in range(iter):
         (dilh,erodeh) = extract_horizontall([], erodeh)
-    show_image(erodeh, "Horizontall erodes")
+    #show_image(erodeh, "Horizontall erodes")
     linesh = cv2.HoughLinesP(erodeh,1,np.pi/180,70,hor_line_size,10)
     linesh = reformat_lines_hor(linesh)
     linesh = remove_duplicates(linesh, 'horizontal')

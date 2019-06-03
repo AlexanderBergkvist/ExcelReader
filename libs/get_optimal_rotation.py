@@ -3,7 +3,19 @@ import numpy as np
 import cv2
 from math import sqrt
 from .get_lines import *
+import random
 
+INFO_STRING = "Q = Counter-ClockWise, W = When done, E = ClockWise, D = Decrease StepSize"
+
+def draw_lines(img, linesv, linesh):
+    for line in linesv:
+        [x1,y1,x2,y2] = line[0]
+        cv2.line(img,(x1,y1),(x2,y2),(0,0,255),3)
+
+    for line in linesh:
+        [x1,y1,x2,y2] = line[0]
+        cv2.line(img,(x1,y1),(x2,y2),(0,0,255),3)
+    return img
 
 def rotateImage(image, angle):
     image_center = tuple(np.array(image.shape[1::-1]) / 2)
@@ -25,15 +37,15 @@ def gather_score(linesh, linesv):
         [x1, y1, x2, y2] = line[0]
         #print("y1: " + str(y1) + " y2: " + str(y2))
         if x2 < x1:
-            print("hor weird format")
+            print("hori weird format")
             continue
         rotate_score -= ((y1 - y2) / 2)  # / 2 to make horizontall score less impactfull
     for line in linesv:
         [x1, y1, x2, y2] = line[0]
         if y2 > y1:
-            rotate_score += (x1 - x2)
+            rotate_score += ((x1 - x2) * 2)
         else:
-            rotate_score += (x2 - x1)
+            rotate_score += ((x1 - x2) * 2)
 
     return rotate_score / (len(linesh) + len(linesv))
 
@@ -45,7 +57,6 @@ def find_optimal_rotation(img, imgc, goal):
     increment_acc = 0
     linesv, linesh = get_lines_wo(img, 100, 100, 15)
     rotate_score = 1000
-    old_rotate_score = gather_score(linesh, linesv)
     increment = 0.08
     additional_increment = 0
     direction = 1
@@ -54,35 +65,32 @@ def find_optimal_rotation(img, imgc, goal):
     done = False
     while not done:
         try:
-            if picture_integrity >= picture_integrity_max_value:
-                img, imgc = refresh_img(
-                    original_img, original_imgc, increment_acc)
-                picture_integrity = 0
+            #if picture_integrity >= picture_integrity_max_value:
+            img, imgc = refresh_img(original_img, original_imgc, increment_acc)
+            #    picture_integrity = 0
             linesv, linesh = get_lines_wo(img, 100, 100, 15)
             picture_integrity += 1
             # show_image(imgc)
             # show_image(img)
             rotate_score = gather_score(linesh, linesv)
-            if 0 < rotate_score and rotate_score < goal: #abs(rotate_score) < goal: # Behöver detta vara positivt
+            if abs(rotate_score) < goal:#0 <= rotate_score and rotate_score < goal:
                 done = True
                 print("\n\nrotate_score " + str(rotate_score))
-                print("old rotate " + str(old_rotate_score))
                 print("done mofo!")
                 break
 
             elif abs(rotate_score) < 0.15:
-                increment = 0.003 - additional_increment
+                increment = 0.01 - additional_increment
             elif abs(rotate_score) < 0.2:
-                increment = 0.005 - additional_increment
+                increment = 0.05 - additional_increment
             elif abs(rotate_score) < 0.5:
-                increment = 0.02 - additional_increment
+                increment = 0.08 - additional_increment
             elif abs(rotate_score) < 1:
-                increment = 0.04 - additional_increment
-            additional_increment +=0.00005
+                increment = 0.1 - additional_increment
+            additional_increment +=0.0001
             if increment < 0.0001:
-                increment = 0.0001
+                increment = 0.0001 * random.randrange(1,4)
             print("\n\nrotate_score " + str(rotate_score))
-            print("old rotate " + str(old_rotate_score))
             print(increment)
 
             if rotate_score < 0:
@@ -96,4 +104,34 @@ def find_optimal_rotation(img, imgc, goal):
         except:
             show_image(img, "Image when crashed")
     show_image(imgc, "Optimal rotation")
+    return img, imgc
+
+
+def let_user_rotate(img, imgc):
+
+    original_img = img
+    original_imgc = imgc
+    increment_acc = 0
+    increment = 0.1
+    while True:
+        img = original_img
+        imgc = original_imgc
+        img = rotateImage(img, increment_acc)
+        imgc = rotateImage(imgc, increment_acc)
+
+        linesv, linesh = get_lines(img, 150, 150, 15)
+        draw_lines(imgc, linesv, linesh)
+        cv2.namedWindow(INFO_STRING + " CurrentStep: " + str(increment), cv2.WINDOW_NORMAL)
+        cv2.imshow(INFO_STRING + " CurrentStep: " + str(increment), imgc)
+        key = cv2.waitKey(1) & 0xFF
+
+        if key == ord("q"):
+            increment_acc += increment
+        elif key == ord("w"):
+            break
+        elif key == ord("e"):
+            increment_acc -= increment
+        elif key == ord("d"):
+            increment = increment / 2
+
     return img, imgc

@@ -1,5 +1,10 @@
-Autorotator: Om bilden är sned måste jag hitta ett sätt att göra den mindre sned...
-
-Ändra kroppningen: Istället för att dra ut raka linjer som är perfekt parallella
-kanske jag kan få avända dom gamla linjerna och croppa enligt dom, men då kommer
+1.
+Ändra croppningen: Istället för att dra ut raka linjer som är perfekt parallella
+kanske jag kan få använda dom gamla linjerna och croppa enligt dom, men då kommer
 kroppningen inte längra bli unison.
+
+2.
+Göras så att man inte behöver exakta raka linjer?
+
+3.
+Ta färg från omgivningen och ge rotation'sfillen den färgen.
