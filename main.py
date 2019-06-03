@@ -28,7 +28,7 @@ if automatic:
 else:
     img, imgc = let_user_rotate(img, imgc)
 
-linesv, linesh = get_lines(img, 100, 200, 15)
+linesv, linesh = get_lines_irreg(img, 100, 200, 15)
 
 
 

@@ -17,6 +17,8 @@ def draw_lines(img, linesv, linesh):
         cv2.line(img,(x1,y1),(x2,y2),(0,0,255),3)
     return img
 
+
+
 def rotateImage(image, angle):
     image_center = tuple(np.array(image.shape[1::-1]) / 2)
     rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
@@ -119,11 +121,11 @@ def let_user_rotate(img, imgc):
         img = rotateImage(img, increment_acc)
         imgc = rotateImage(imgc, increment_acc)
 
-        linesv, linesh = get_lines(img, 150, 150, 15)
+        linesv, linesh = get_lines_irreg(img, 150, 150, 15)
         draw_lines(imgc, linesv, linesh)
         cv2.namedWindow(INFO_STRING + " CurrentStep: " + str(increment), cv2.WINDOW_NORMAL)
         cv2.imshow(INFO_STRING + " CurrentStep: " + str(increment), imgc)
-        key = cv2.waitKey(1) & 0xFF
+        key = cv2.waitKey(0) & 0xFF
 
         if key == ord("q"):
             increment_acc += increment
