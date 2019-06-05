@@ -8,3 +8,5 @@ Göras så att man inte behöver exakta raka linjer?
 
 3.
 Ta färg från omgivningen och ge rotation'sfillen den färgen.
+
+4, Fixa ut iterations till en global variabel

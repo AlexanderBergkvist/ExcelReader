@@ -120,6 +120,49 @@ def remove_duplicates_irreg(lines, direction):
             i += 1
     return lines
 
+def bunch_up_lines(lines, direction):
+    lines = lines.tolist()
+    for line in lines:
+        line = [line]
+
+    #print(lines)
+    length = len(lines)
+    if direction == 'vertical':
+        i = 0
+        while i < length:
+            z = i + 1
+            while z < length:
+                if z >= length:
+                    break
+                ix1, y1, ix2, y2 = lines[i][0]
+                zx1, zy1, zx2, zy2 = lines[z][0]
+                if abs(ix1 - zx1) < LINE_SPACE_VERTICAL and abs(ix2 - zx2) < LINE_SPACE_VERTICAL:
+                    lines[i].append(lines[z][0])
+                    lines.pop(z)
+                    length -= 1
+                    continue
+                z += 1
+            i += 1
+    elif direction == 'horizontal':
+        i = 0
+        while i < length:
+            z = i + 1
+            while z < length:
+                if z >= length:
+                    break
+                x1, iy1, x2, iy2=lines[i][0]
+                zx1, zy1, zx2, zy2=lines[z][0]
+                if abs(iy1 - zy1) < LINE_SPACE_HORIZONTAL and abs(iy2 - zy2) < LINE_SPACE_HORIZONTAL:
+                    lines[i].append(lines[z][0])
+                    lines.pop(z)
+                    length -= 1
+                    continue
+                z += 1
+            i += 1
+
+    #print("Result", lines )
+    return lines
+
 
 # Vertical
 def extract_vertical(edges, erode):
@@ -182,9 +225,10 @@ def get_lines_irreg(img, vert_line_size, hor_line_size, iter):
     for i in range(iter):
         (dilv, erodev)=extract_vertical([], erodev)
     # show_image(erodev, "Vertical erodes")
-    linesv=cv2.HoughLinesP(erodev, 1, np.pi / 180, 100, vert_line_size, 10)
-    linesv=reformat_lines_vert(linesv)
-    linesv=remove_duplicates_irreg(linesv, 'vertical')
+    linesv = cv2.HoughLinesP(erodev, 1, np.pi / 180, 100, vert_line_size, 10)
+    linesv = reformat_lines_vert(linesv)
+    linesv = remove_duplicates_irreg(linesv, 'vertical')
+    linesv = bunch_up_lines(linesv, 'vertical')
     # horizontall
 
     (dilh, erodeh)=extract_horizontall(edges, [])
@@ -194,13 +238,15 @@ def get_lines_irreg(img, vert_line_size, hor_line_size, iter):
     linesh=cv2.HoughLinesP(erodeh, 1, np.pi / 180, 70, hor_line_size, 10)
     linesh=reformat_lines_hor(linesh)
     linesh=remove_duplicates_irreg(linesh, 'horizontal')
+    linesh = bunch_up_lines(linesh, 'horizontal')
 
+    #print(linesv)
     print(len(linesv))
     print(len(linesh))
     return linesv, linesh
 
 
-def get_lines_wo(img, vert_line_size, hor_line_size, iter):
+def get_lines_without_averaging(img, vert_line_size, hor_line_size, iter):
     edges=cv2.Canny(img, 80, 170, apertureSize=3)
 
     # Vertical

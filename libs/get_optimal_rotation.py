@@ -9,8 +9,13 @@ INFO_STRING = "Q = Counter-ClockWise, W = When done, E = ClockWise, D = Decrease
 
 def draw_lines(img, linesv, linesh):
     for line in linesv:
-        [x1,y1,x2,y2] = line[0]
-        cv2.line(img,(x1,y1),(x2,y2),(0,0,255),3)
+        if len(line) > 1:
+            for i in line:
+                [x1,y1,x2,y2] = i
+                cv2.line(img,(x1,y1),(x2,y2),(0,0,255),3)
+        else:
+            [x1,y1,x2,y2] = line[0]
+            cv2.line(img,(x1,y1),(x2,y2),(0,0,255),3)
 
     for line in linesh:
         [x1,y1,x2,y2] = line[0]
@@ -57,7 +62,7 @@ def find_optimal_rotation(img, imgc, goal):
     original_img = img
     original_imgc = imgc
     increment_acc = 0
-    linesv, linesh = get_lines_wo(img, 100, 100, 15)
+    linesv, linesh = get_lines_without_averaging(img, 100, 100, 15)
     rotate_score = 1000
     increment = 0.08
     additional_increment = 0
@@ -70,7 +75,7 @@ def find_optimal_rotation(img, imgc, goal):
             #if picture_integrity >= picture_integrity_max_value:
             img, imgc = refresh_img(original_img, original_imgc, increment_acc)
             #    picture_integrity = 0
-            linesv, linesh = get_lines_wo(img, 100, 100, 15)
+            linesv, linesh = get_lines_without_averaging(img, 100, 100, 15)
             picture_integrity += 1
             # show_image(imgc)
             # show_image(img)
@@ -121,7 +126,7 @@ def let_user_rotate(img, imgc):
         img = rotateImage(img, increment_acc)
         imgc = rotateImage(imgc, increment_acc)
 
-        linesv, linesh = get_lines_irreg(img, 150, 150, 15)
+        linesv, linesh = get_lines_irreg(img, 200, 200, 15)
         draw_lines(imgc, linesv, linesh)
         cv2.namedWindow(INFO_STRING + " CurrentStep: " + str(increment), cv2.WINDOW_NORMAL)
         cv2.imshow(INFO_STRING + " CurrentStep: " + str(increment), imgc)

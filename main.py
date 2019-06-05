@@ -5,14 +5,15 @@ import sys
 import pyexcel
 
 from math import sqrt
+
 from libs.get_cropped_picture import get_cropped_picture
 from libs.get_lines import *
-from libs.get_cells import get_cells
+from libs.get_cells import *
 from libs.tesseract import *
-from libs.show_image import show_image
+from libs.show_image import *
 from libs.get_optimal_rotation import *
 
-
+ASSUME_PERFECT_GRID = False
 
 
 np.set_printoptions(threshold=sys.maxsize)
@@ -28,7 +29,11 @@ if automatic:
 else:
     img, imgc = let_user_rotate(img, imgc)
 
-linesv, linesh = get_lines_irreg(img, 100, 200, 15)
+
+if ASSUME_PERFECT_GRID:
+    linesv, linesh = get_lines_(img, 100, 200, 15)
+else:
+    linesv, linesh = get_lines_irreg(img, 100, 200, 15)
 
 
 
@@ -40,7 +45,10 @@ HEIGHT,WIDTH = img.shape[:2]
 
 show_image(imgc, "actual lines")
 print("entering get cells")
-cells = get_cells(img,linesv, linesh)
+if ASSUME_PERFECT_GRID:
+    cells = get_cells(img,linesv, linesh)
+else:
+    cells = get_cells_irreg(img,linesv, linesh)
 print("entering get string rep")
 spreadsheet = get_string_rep(cells)
 print(spreadsheet)
