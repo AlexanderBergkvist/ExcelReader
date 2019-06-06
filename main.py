@@ -12,6 +12,7 @@ from libs.get_cells import *
 from libs.tesseract import *
 from libs.show_image import *
 from libs.get_optimal_rotation import *
+from libs.global_variables import *
 
 ASSUME_PERFECT_GRID = False
 
@@ -31,25 +32,24 @@ else:
 
 
 if ASSUME_PERFECT_GRID:
-    linesv, linesh = get_lines_(img, 100, 200, 15)
+    linesv, linesh = get_lines_(img, MODE_PERFECT_SPREADSHEET)
 else:
-    linesv, linesh = get_lines_irreg(img, 100, 200, 15)
+    linesv, linesh = get_lines(img, MODE_IRREGULAR_SPREADSHEET)
 
 
-
-imgc = draw_lines(imgc,linesv,linesh)
-
-
-HEIGHT,WIDTH = img.shape[:2]
+imgc = draw_lines(imgc, linesv, linesh)
 
 
-show_image(imgc, "actual lines")
-print("entering get cells")
+HEIGHT, WIDTH = img.shape[:2]
+
+
+show_image(imgc, "Actual lines")
+print("Entering get cells")
 if ASSUME_PERFECT_GRID:
-    cells = get_cells(img,linesv, linesh)
+    cells = get_cells(img, linesv, linesh)
 else:
-    cells = get_cells_irreg(img,linesv, linesh)
-print("entering get string rep")
+    cells = get_cells_irreg(img, linesv, linesh)
+print("Entering get string rep")
 spreadsheet = get_string_rep(cells)
 print(spreadsheet)
 pyexcel.save_as(array=spreadsheet, dest_file_name="result.xls")

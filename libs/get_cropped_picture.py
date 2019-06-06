@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from .global_variables import *
 cordinate = []
 image = []
 INFO_STRING = "A = Rotate automatically, M = Rotate manually"
@@ -25,7 +26,6 @@ def get_cropped_picture(path):
     image = cv2.imread(path)
     clone = image.copy()
 
-    #cv2.namedWindow('img', cv2.WINDOW_NORMAL)
     cv2.namedWindow(INFO_STRING, cv2.WINDOW_NORMAL)
     cv2.setMouseCallback(INFO_STRING, crop)
 

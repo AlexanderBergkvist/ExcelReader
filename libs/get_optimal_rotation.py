@@ -3,9 +3,10 @@ import numpy as np
 import cv2
 from math import sqrt
 from .get_lines import *
+from .global_variables import *
 import random
 
-INFO_STRING = "Q = Counter-ClockWise, W = When done, E = ClockWise, D = Decrease StepSize"
+INFO_STRING = "Q = Counter-ClockWise, W = When done, E = ClockWise, R = Redo, D = Decrease StepSize"
 
 def draw_lines(img, linesv, linesh):
     for line in linesv:
@@ -62,7 +63,7 @@ def find_optimal_rotation(img, imgc, goal):
     original_img = img
     original_imgc = imgc
     increment_acc = 0
-    linesv, linesh = get_lines_without_averaging(img, 100, 100, 15)
+    linesv, linesh = get_lines(img, MODE_GET_LINES_WITHOUT_AVERAGING)
     rotate_score = 1000
     increment = 0.08
     additional_increment = 0
@@ -75,15 +76,15 @@ def find_optimal_rotation(img, imgc, goal):
             #if picture_integrity >= picture_integrity_max_value:
             img, imgc = refresh_img(original_img, original_imgc, increment_acc)
             #    picture_integrity = 0
-            linesv, linesh = get_lines_without_averaging(img, 100, 100, 15)
+            linesv, linesh = get_lines(img, MODE_GET_LINES_WITHOUT_AVERAGING)
             picture_integrity += 1
             # show_image(imgc)
             # show_image(img)
             rotate_score = gather_score(linesh, linesv)
             if abs(rotate_score) < goal:#0 <= rotate_score and rotate_score < goal:
                 done = True
-                print("\n\nrotate_score " + str(rotate_score))
-                print("done mofo!")
+                print("\n\nRotate_score " + str(rotate_score))
+                print("Done")
                 break
 
             elif abs(rotate_score) < 0.15:
@@ -97,7 +98,7 @@ def find_optimal_rotation(img, imgc, goal):
             additional_increment +=0.0001
             if increment < 0.0001:
                 increment = 0.0001 * random.randrange(1,4)
-            print("\n\nrotate_score " + str(rotate_score))
+            print("\n\nRotate_score " + str(rotate_score))
             print(increment)
 
             if rotate_score < 0:
@@ -126,7 +127,7 @@ def let_user_rotate(img, imgc):
         img = rotateImage(img, increment_acc)
         imgc = rotateImage(imgc, increment_acc)
 
-        linesv, linesh = get_lines_irreg(img, 200, 200, 15)
+        linesv, linesh = get_lines(img, MODE_IRREGULAR_SPREADSHEET)
         draw_lines(imgc, linesv, linesh)
         cv2.namedWindow(INFO_STRING + " CurrentStep: " + str(increment), cv2.WINDOW_NORMAL)
         cv2.imshow(INFO_STRING + " CurrentStep: " + str(increment), imgc)
