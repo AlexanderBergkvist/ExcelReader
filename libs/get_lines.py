@@ -14,6 +14,9 @@ def connected(q1, q2, p1, p2):
         return True
 
 def reformat_lines_vert(lines):
+    if lines is None:
+        print("No lines to reformat")
+        return
     for line in lines:
         [x1, y1, x2, y2] = line[0]
         if y1 > y2:
@@ -21,6 +24,9 @@ def reformat_lines_vert(lines):
     return lines
 
 def reformat_lines_hor(lines):
+    if lines is None:
+        print("No lines to reformat")
+        return
     for line in lines:
         [x1, y1, x2, y2] = line[0]
         if x1 > x2:
@@ -30,6 +36,8 @@ def reformat_lines_hor(lines):
 
 
 def remove_duplicates(lines, direction):
+    if lines is None:
+        return
     length = len(lines)
     i = 0
     while i < length:
@@ -58,6 +66,8 @@ def remove_duplicates(lines, direction):
 
 
 def remove_duplicates_irreg(lines, direction):
+    if lines is None:
+        return
     length = len(lines)
     i = 0
     while i < length:
@@ -89,11 +99,13 @@ def remove_duplicates_irreg(lines, direction):
     return lines
 
 def bunch_up_lines(lines, direction):
+    if lines is None:
+        return
     lines = lines.tolist()
     for line in lines:
         line = [line]
 
-    #print(lines)
+
     length = len(lines)
 
     i = 0
@@ -179,6 +191,8 @@ def get_lines(img, mode):
     elif mode == "perfect":
         linesh=remove_duplicates(linesh, 'horizontal')
 
-    print(len(linesv))
-    print(len(linesh))
+    if not linesv is None:
+        print(len(linesv))
+    if not linesv is None:
+        print(len(linesh))
     return linesv, linesh

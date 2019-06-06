@@ -9,18 +9,23 @@ import random
 INFO_STRING = "Q = Counter-ClockWise, W = When done, E = ClockWise, R = Redo, D = Decrease StepSize"
 
 def draw_lines(img, linesv, linesh):
-    for line in linesv:
-        if len(line) > 1:
-            for i in line:
-                [x1,y1,x2,y2] = i
+    if linesv is None:
+        print("Couldn't find vertical lines")
+    else:
+        for line in linesv:
+            if len(line) > 1:
+                for i in line:
+                    [x1,y1,x2,y2] = i
+                    cv2.line(img,(x1,y1),(x2,y2),(0,0,255),3)
+            else:
+                [x1,y1,x2,y2] = line[0]
                 cv2.line(img,(x1,y1),(x2,y2),(0,0,255),3)
-        else:
+    if linesh is None:
+        print("Couldn't find horizontal lines")
+    else:
+        for line in linesh:
             [x1,y1,x2,y2] = line[0]
             cv2.line(img,(x1,y1),(x2,y2),(0,0,255),3)
-
-    for line in linesh:
-        [x1,y1,x2,y2] = line[0]
-        cv2.line(img,(x1,y1),(x2,y2),(0,0,255),3)
     return img
 
 
@@ -129,7 +134,7 @@ def let_user_rotate(img, imgc):
     original_img = img
     original_imgc = imgc
     increment_acc = 0
-    increment = 1.1
+    increment = 0.1
     while True:
         img = original_img
         imgc = original_imgc
