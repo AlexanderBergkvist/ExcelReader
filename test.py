@@ -1,31 +1,29 @@
-import cv2
+import matplotlib.pyplot as plt
 import numpy as np
+import cv2
+import sys
+import pyexcel
 
-def extract_vertical(edges, erode):
-    if erode != []:
-        kernel = np.ones((6,1),np.uint8)
-        dil = cv2.dilate(erode,kernel,iterations = 1)
-        kernel = np.ones((14,1),np.uint8)
-        erode = cv2.erode(dil,kernel,iterations = 1)
-    else:
-        kernel = np.ones((6,2),np.uint8)
-        dil = cv2.dilate(edges,kernel,iterations = 1)
-        kernel = np.ones((8,1),np.uint8)
-        erode = cv2.erode(dil,kernel,iterations = 1)
-    return (dil,erode)
+from math import sqrt
+
+from libs.get_cropped_picture import get_cropped_picture
+from libs.get_lines import *
+from libs.get_cells import *
+from libs.tesseract import *
+from libs.show_image import *
+from libs.get_optimal_rotation import *
+from libs.global_variables import *
+
+ASSUME_PERFECT_GRID = False
 
 
-img = cv2.imread("/home/alexander/Desktop/Projects/Ericsson/edgedetection/pictures/t.png")
 
-edges = cv2.Canny(img,80,170,apertureSize = 3)
+np.set_printoptions(threshold=sys.maxsize)
+pic_directory = "/home/alexander/Desktop/Projects/Ericsson/ExcelReader/pictures/"
+pic_name = "gt3.jpg"
 
-#Vertical
-(dilv,erodev) = extract_vertical(edges, [])
-for i in range(15):
-    (dilv,erodev) = extract_vertical([], erodev)
-cv2.namedWindow('edges', cv2.WINDOW_NORMAL)
-cv2.imshow('edges',edges)
-cv2.namedWindow('img', cv2.WINDOW_NORMAL)
-cv2.imshow('img',erodev)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+imgc, automatic = get_cropped_picture(pic_directory + pic_name)
+#imgc = rotateImage(imgc, -1.5)
+img = cv2.cvtColor(imgc, cv2.COLOR_BGR2GRAY)
+#show_image(imgc, "rotated image")
+print(img)

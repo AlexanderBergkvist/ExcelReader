@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import cv2
-from math import sqrt
+from math import sqrt,ceil
 from .get_lines import *
 from .global_variables import *
 import random
@@ -24,26 +24,38 @@ def draw_lines(img, linesv, linesh):
     return img
 
 
-
-def rotateImage(image, angle):
+def rotateImage(image, angle, fill_color):
     image_center = tuple(np.array(image.shape[1::-1]) / 2)
     rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
-    result = cv2.warpAffine(
-        image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR, borderValue=(200, 200, 200))
+    result = cv2.warpAffine(image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR, borderValue=(int(fill_color[0]),
+                                                                                                     int(fill_color[1]),
+                                                                                                     int(fill_color[2])))
     return result
 
 
-def refresh_img(img, imgc, increment_acc):
-    img = rotateImage(img, increment_acc)
-    imgc = rotateImage(imgc, increment_acc)
+def refresh_img(img, imgc, increment_acc, fill_color):
+    img = rotateImage(img, increment_acc, fill_color)
+    imgc = rotateImage(imgc, increment_acc, fill_color)
     return img, imgc
 
+def find_fill_color(img): #Fix this later
+    acc = [0,0,0]
+    amount = 0
+    for i in range(5):
+        for pixel in img[-i - 1]:
+            if pixel[0] >= 200 and pixel[1] >= 200 and pixel[2] >= 200:
+                acc += pixel
+                amount += 1
+    for i in range(len(acc)):
+        acc[i] = ceil(acc[i] / amount)
+    if acc.all() == 0:
+        return [220,220,200]
+    return acc
 
 def gather_score(linesh, linesv):
     rotate_score = 0
     for line in linesh:
         [x1, y1, x2, y2] = line[0]
-        #print("y1: " + str(y1) + " y2: " + str(y2))
         if x2 < x1:
             print("hori weird format")
             continue
@@ -59,7 +71,7 @@ def gather_score(linesh, linesv):
 
 
 def find_optimal_rotation(img, imgc, goal):
-
+    fill_color = find_fill_color(imgc)
     original_img = img
     original_imgc = imgc
     increment_acc = 0
@@ -73,15 +85,12 @@ def find_optimal_rotation(img, imgc, goal):
     done = False
     while not done:
         try:
-            #if picture_integrity >= picture_integrity_max_value:
-            img, imgc = refresh_img(original_img, original_imgc, increment_acc)
-            #    picture_integrity = 0
+            img = rotateImage(img, increment_acc, fill_color)
+            imgc = rotateImage(imgc, increment_acc, fill_color)
             linesv, linesh = get_lines(img, MODE_GET_LINES_WITHOUT_AVERAGING)
             picture_integrity += 1
-            # show_image(imgc)
-            # show_image(img)
             rotate_score = gather_score(linesh, linesv)
-            if abs(rotate_score) < goal:#0 <= rotate_score and rotate_score < goal:
+            if abs(rotate_score) < goal:
                 done = True
                 print("\n\nRotate_score " + str(rotate_score))
                 print("Done")
@@ -102,12 +111,12 @@ def find_optimal_rotation(img, imgc, goal):
             print(increment)
 
             if rotate_score < 0:
-                img = rotateImage(img, -increment)
-                imgc = rotateImage(imgc, -increment)
+                img = rotateImage(img, -increment, fill_color)
+                imgc = rotateImage(imgc, -increment, fill_color)
                 increment_acc -= increment
             else:
-                img = rotateImage(img, increment)
-                imgc = rotateImage(imgc, increment)
+                img = rotateImage(img, increment, fill_color)
+                imgc = rotateImage(imgc, increment, fill_color)
                 increment_acc += increment
         except:
             show_image(img, "Image when crashed")
@@ -116,16 +125,16 @@ def find_optimal_rotation(img, imgc, goal):
 
 
 def let_user_rotate(img, imgc):
-
+    fill_color = find_fill_color(imgc)
     original_img = img
     original_imgc = imgc
     increment_acc = 0
-    increment = 0.1
+    increment = 1.1
     while True:
         img = original_img
         imgc = original_imgc
-        img = rotateImage(img, increment_acc)
-        imgc = rotateImage(imgc, increment_acc)
+        img = rotateImage(img, increment_acc, fill_color)
+        imgc = rotateImage(imgc, increment_acc, fill_color)
 
         linesv, linesh = get_lines(img, MODE_IRREGULAR_SPREADSHEET)
         draw_lines(imgc, linesv, linesh)

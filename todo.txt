@@ -1,12 +1,5 @@
 1.
-Ändra croppningen: Istället för att dra ut raka linjer som är perfekt parallella
-kanske jag kan få använda dom gamla linjerna och croppa enligt dom, men då kommer
-kroppningen inte längra bli unison.
+Gör bra hjälpprogram för att snabbt ta ut bra dilation och erodes
 
 2.
-Göras så att man inte behöver exakta raka linjer?
-
-3.
-Ta färg från omgivningen och ge rotation'sfillen den färgen.
-
-4, Fixa ut iterations till en global variabel
+Fixa iaf 5 QA testpapper och kör dom
