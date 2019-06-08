@@ -56,10 +56,10 @@ def remove_duplicates(lines, direction):
                     continue
             elif direction == 'horizontal':
                 if abs(iy1 - zy1) < LINE_SPACE_HORIZONTAL and abs(iy2 - zy2) < LINE_SPACE_HORIZONTAL:
-                    lines[i][0]=[min(x1, zx1), ceil((iy1 + zy1) / 2), max(x2, zx2), ceil((iy2 + zy2)) / 2]
+                    lines[i][0]=[min(ix1, zx1), ceil((iy1 + zy1) / 2), max(ix2, zx2), ceil((iy2 + zy2)) / 2]
                     lines=np.delete(lines, z, 0)
                     length -= 1
-                continue
+                    continue
             z += 1
         i += 1
     return lines
@@ -164,7 +164,6 @@ def extract_horizontall(edges, erode):
 
 def get_lines(img, mode):
     edges=cv2.Canny(img, 80, 170, apertureSize=3)
-
     # Vertical
     (dilv, erodev)=extract_vertical(edges, [])
     for i in range(PIC_ENHANCEMENT_ITERATION):
@@ -172,13 +171,15 @@ def get_lines(img, mode):
     # show_image(erodev, "Vertical erodes")
     linesv=cv2.HoughLinesP(erodev, 1, np.pi / 180, 100, VERTICAL_LINE_LENGTH, 10)
     linesv=reformat_lines_vert(linesv)
+
+
     if mode == "irregular":
         linesv = remove_duplicates_irreg(linesv, 'vertical')
         linesv = bunch_up_lines(linesv, 'vertical')
     elif mode =="perfect":
         linesv=remove_duplicates(linesv, 'vertical')
-    # horizontall
 
+    # horizontall
     (dilh, erodeh)=extract_horizontall(edges, [])
     for i in range(PIC_ENHANCEMENT_ITERATION):
         (dilh, erodeh)=extract_horizontall([], erodeh)
@@ -186,11 +187,10 @@ def get_lines(img, mode):
     linesh=cv2.HoughLinesP(erodeh, 1, np.pi / 180, 70, HORIZONTAL_LINE_LENGTH, 10)
     linesh=reformat_lines_hor(linesh)
     if mode == "irregular":
-            linesh=remove_duplicates_irreg(linesh, 'horizontal')
-            linesh = bunch_up_lines(linesh, 'horizontal')
+        linesh=remove_duplicates_irreg(linesh, 'horizontal')
+        linesh = bunch_up_lines(linesh, 'horizontal')
     elif mode == "perfect":
-        linesh=remove_duplicates(linesh, 'horizontal')
-
+        linesh=remove_duplicates(linesh, 'horizontal') # CAUSE OF PROBLEM
     if not linesv is None:
         print(len(linesv))
     if not linesv is None:

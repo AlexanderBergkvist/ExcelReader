@@ -14,12 +14,12 @@ from libs.show_image import *
 from libs.get_optimal_rotation import *
 from libs.global_variables import *
 
-ASSUME_PERFECT_GRID = False
+ASSUME_PERFECT_GRID = True
 
 
 np.set_printoptions(threshold=sys.maxsize)
 pic_directory = "/home/alexander/Desktop/Projects/Ericsson/ExcelReader/pictures/"
-pic_name = "gt3.jpg"
+pic_name = "qa_test.png"
 
 imgc, automatic = get_cropped_picture(pic_directory + pic_name)
 #imgc = rotateImage(imgc, -1.5)
@@ -32,10 +32,9 @@ else:
 
 
 if ASSUME_PERFECT_GRID:
-    linesv, linesh = get_lines_(img, MODE_PERFECT_SPREADSHEET)
+    linesv, linesh = get_lines(img, MODE_PERFECT_SPREADSHEET)
 else:
     linesv, linesh = get_lines(img, MODE_IRREGULAR_SPREADSHEET)
-
 
 imgc = draw_lines(imgc, linesv, linesh)
 
