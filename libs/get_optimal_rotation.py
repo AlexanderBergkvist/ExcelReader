@@ -16,16 +16,16 @@ def draw_lines(img, linesv, linesh):
             if len(line) > 1:
                 for i in line:
                     [x1,y1,x2,y2] = i
-                    cv2.line(img,(x1,y1),(x2,y2),(0,0,255),3)
+                    cv2.line(img,(x1,y1),(x2,y2),LINE_COLOR,3)
             else:
                 [x1,y1,x2,y2] = line[0]
-                cv2.line(img,(x1,y1),(x2,y2),(0,0,255),3)
+                cv2.line(img,(x1,y1),(x2,y2),LINE_COLOR,3)
     if linesh is None:
         print("Couldn't find horizontal lines")
     else:
         for line in linesh:
             [x1,y1,x2,y2] = line[0]
-            cv2.line(img,(x1,y1),(x2,y2),(0,0,255),3)
+            cv2.line(img,(x1,y1),(x2,y2),LINE_COLOR,3)
     return img
 
 
@@ -155,5 +155,6 @@ def let_user_rotate(img, imgc):
             increment_acc -= increment
         elif key == ord("d"):
             increment = increment / 2
+            cv2.destroyAllWindows()
 
     return img, imgc

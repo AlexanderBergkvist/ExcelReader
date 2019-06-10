@@ -136,14 +136,14 @@ def bunch_up_lines(lines, direction):
 # Vertical
 def extract_vertical(edges, erode):
     if erode != []:
-        kernel=np.ones((8, 1), np.uint8)
+        kernel=np.ones(VERTICAL_INITIAL_DILATION, np.uint8)
         dil=cv2.dilate(erode, kernel, iterations=1)
-        kernel=np.ones((10, 1), np.uint8)
+        kernel=np.ones(VERTICAL_INITIAL_ERODE, np.uint8)
         erode=cv2.erode(dil, kernel, iterations=1)
     else:
-        kernel=np.ones((8, 3), np.uint8)
+        kernel=np.ones(VERTICAL_COMMON_DILATION, np.uint8)
         dil=cv2.dilate(edges, kernel, iterations=1)
-        kernel=np.ones((10, 1), np.uint8)
+        kernel=np.ones(VERTICAL_COMMON_ERODE, np.uint8)
         erode=cv2.erode(dil, kernel, iterations=1)
     return (dil, erode)
 
@@ -151,14 +151,14 @@ def extract_vertical(edges, erode):
 # horizontall
 def extract_horizontall(edges, erode):
     if erode != []:
-        kernel=np.ones((1, 4), np.uint8)
+        kernel=np.ones(HORIZONTAL_INITIAL_DILATION, np.uint8)
         dil=cv2.dilate(erode, kernel, iterations=1)
-        kernel=np.ones((1, 8), np.uint8)
+        kernel=np.ones(HORIZONTAL_INITIAL_ERODE, np.uint8)
         erode=cv2.erode(dil, kernel, iterations=1)
     else:
-        kernel=np.ones((3, 4), np.uint8)
+        kernel=np.ones(HORIZONTAL_COMMON_DILATION, np.uint8)
         dil=cv2.dilate(edges, kernel, iterations=1)
-        kernel=np.ones((1, 8), np.uint8)
+        kernel=np.ones(HORIZONTAL_INITIAL_ERODE, np.uint8)
         erode=cv2.erode(dil, kernel, iterations=1)
     return (dil, erode)
 

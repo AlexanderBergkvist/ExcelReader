@@ -3,6 +3,17 @@ import cv2
 from .show_image import show_image
 from .global_variables import *
 
+def attempt_image_improvement(cell):
+    cell = cv2.resize(cell, (0,0), fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+    cell = cv2.GaussianBlur(cell, (5, 5), 0)
+    """
+    cell = cv2.addWeighted(cell, 2.4, np.zeros(cell.shape, cell.dtype), 0, -180)
+    kernel = np.array([[-1, -1, -1],
+                       [-1, 9, -1],
+                       [-1, -1, -1]])
+    cell = cv2.filter2D(cell, -1, kernel)
+    """
+    return cell
 
 def get_cells(img, linesv, linesh):
     pointsv = []
@@ -27,14 +38,9 @@ def get_cells(img, linesv, linesh):
                 continue
             cell = img[pointsh[i] + FROM_LINE_OFFSET:pointsh[i + 1] +
                        FROM_LINE_OFFSET, pointsv[x]:pointsv[x + 1]].copy()
-            # show_image(cell,"Particular cell")
-            cell = cv2.GaussianBlur(cell, (7, 7), 0)
-            cell = cv2.addWeighted(cell, 2.4, np.zeros(
-                cell.shape, cell.dtype), 0, -180)
-            kernel = np.array([[-1, -1, -1],
-                               [-1, 9, -1],
-                               [-1, -1, -1]])
-            cell = cv2.filter2D(cell, -1, kernel)
+            if ATTEMPT_IMAGE_IMPROVEMENT:
+                cell = attempt_image_improvement(cell)
+            show_image(cell, "Particular cell")
             row.append(cell)
         cells.append(row)
     return cells
@@ -44,7 +50,8 @@ def find_correct_line(p1, p2, lines):
     if p2 < p1:
         self.assertTrue(False, 'WeirdFormating')
 
-    allowed_offset = abs(p1 - p2) / 3 #If the line goes less than a third into cell it cannot be considered a valid line.
+    # If the line goes less than a third into cell it cannot be considered a valid line.
+    allowed_offset = abs(p1 - p2) / 3
     for line in lines:
         [x1, y1, x2, y2] = line
         if (y1 < (p1 + allowed_offset) and y2 < (p1 + allowed_offset)) or (y1 > (p2 - allowed_offset) and y2 > (p2 - allowed_offset)):
@@ -77,7 +84,8 @@ def get_cells_irreg(img, linesv, linesh):
             else:
                 [zx1, _, _, _] = line
             # Second line
-            for iteration in range(len(linesv)): #If the first line isn't valid keep looking
+            # If the first line isn't valid keep looking
+            for iteration in range(len(linesv)):
                 line = find_correct_line(iy1, iyy1, linesv[z + iteration + 1])
                 if line == None:
                     continue
@@ -85,15 +93,11 @@ def get_cells_irreg(img, linesv, linesh):
                     [zxx1, _, _, _] = line
                     break
 
-            cell = img[iy1 + FROM_LINE_OFFSET:iyy1 + FROM_LINE_OFFSET, zx1:zxx1].copy()
-            # show_image(cell,"Particular cell")
-            cell = cv2.GaussianBlur(cell, (7, 7), 0)
-            cell = cv2.addWeighted(cell, 2.4, np.zeros(
-                cell.shape, cell.dtype), 0, -180)
-            kernel = np.array([[-1, -1, -1],
-                               [-1, 9, -1],
-                               [-1, -1, -1]])
-            cell = cv2.filter2D(cell, -1, kernel)
+            cell = img[iy1 + FROM_LINE_OFFSET:iyy1 +
+                       FROM_LINE_OFFSET, zx1:zxx1].copy()
+            if ATTEMPT_IMAGE_IMPROVEMENT:
+                cell = attempt_image_improvement(cell)
+            #show_image(cell, "Particular cell")
             row.append(cell)
         cells.append(row)
     return cells

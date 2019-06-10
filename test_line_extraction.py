@@ -1,10 +1,11 @@
 #https://docs.opencv.org/3.4/dd/dd7/tutorial_morph_lines_detection.html
 import sys
-sys.path.append('/home/alexander/Desktop/Projects/Ericsson/ExcelReader/libs')
+#sys.path.append('/home/alexander/Desktop/Projects/Ericsson/ExcelReader/libs')
 import cv2
 import numpy as np
-from show_image import show_image
-from get_cropped_picture import get_cropped_picture
+from libs.show_image import *
+from libs.get_cropped_picture import *
+from libs.global_variables import *
 from math import ceil
 
 
@@ -53,14 +54,14 @@ def remove_duplicates(lines, direction):
 #Vertical
 def extract_vertical(edges, erode):
     if erode != []:
-        kernel = np.ones((8,1),np.uint8)
+        kernel = np.ones(VERTICAL_INITIAL_DILATION,np.uint8)
         dil = cv2.dilate(erode,kernel,iterations = 1)
-        kernel = np.ones((10,1),np.uint8)
+        kernel = np.ones(VERTICAL_INITIAL_ERODE,np.uint8)
         erode = cv2.erode(dil,kernel,iterations = 1)
     else:
-        kernel = np.ones((8,3),np.uint8)
+        kernel = np.ones(VERTICAL_COMMON_DILATION,np.uint8)
         dil = cv2.dilate(edges,kernel,iterations = 1)
-        kernel = np.ones((10,1),np.uint8)
+        kernel = np.ones(VERTICAL_COMMON_ERODE,np.uint8)
         erode = cv2.erode(dil,kernel,iterations = 1)
     return (dil,erode)
 
@@ -68,49 +69,46 @@ def extract_vertical(edges, erode):
 #horizontall
 def extract_horizontall(edges, erode):
     if erode != []:
-        kernel = np.ones((1,4),np.uint8)
+        kernel = np.ones(HORIZONTAL_INITIAL_DILATION,np.uint8)
         dil = cv2.dilate(erode,kernel,iterations = 1)
-        kernel = np.ones((1,8),np.uint8)
+        kernel = np.ones(HORIZONTAL_INITIAL_ERODE,np.uint8)
         erode = cv2.erode(dil,kernel,iterations = 1)
     else:
-        kernel = np.ones((3,4),np.uint8)
+        kernel = np.ones(HORIZONTAL_COMMON_DILATION,np.uint8)
         dil = cv2.dilate(edges,kernel,iterations = 1)
-        kernel = np.ones((1,8),np.uint8)
+        kernel = np.ones(HORIZONTAL_COMMON_ERODE,np.uint8)
         erode = cv2.erode(dil,kernel,iterations = 1)
     return (dil,erode)
 
 def get_lines():
     pic_directory = "/home/alexander/Desktop/Projects/Ericsson/ExcelReader/pictures/"
-    pic_name = "gt2.jpg"
+    pic_name = "qa_test1.png"
 
-    imgc = get_cropped_picture(pic_directory + pic_name)
+    imgc, _ = get_cropped_picture(pic_directory + pic_name)
     img = cv2.cvtColor(imgc, cv2.COLOR_BGR2GRAY)
-    vert_line_size = 200
-    hor_line_size = 70
-    iter = 20
 
     edges = cv2.Canny(img,80,170,apertureSize = 3)
 
     #Vertical
     (dilv,erodev) = extract_vertical(edges, [])
-    for i in range(iter):
+    for i in range(PIC_ENHANCEMENT_ITERATION):
         (dilv,erodev) = extract_vertical([], erodev)
-    linesv = cv2.HoughLinesP(erodev,1,np.pi/180,100,vert_line_size,10)
+    linesv = cv2.HoughLinesP(erodev,1,np.pi/180,100, VERTICAL_LINE_LENGTH,10)
     linesv = remove_duplicates(linesv, 'vertical')
     #horizontall
     (dilh,erodeh) = extract_horizontall(edges, [])
-    for i in range(iter):
+    for i in range(PIC_ENHANCEMENT_ITERATION):
         (dilh,erodeh) = extract_horizontall([], erodeh)
 
     cv2.namedWindow('e', cv2.WINDOW_NORMAL)
     cv2.imshow('e',erodeh)
     cv2.namedWindow('r', cv2.WINDOW_NORMAL)
     cv2.imshow('r',erodev)
-    cv2.namedWindow('img', cv2.WINDOW_NORMAL)
-    cv2.imshow('img',img)
+    #cv2.namedWindow('img', cv2.WINDOW_NORMAL)
+    #cv2.imshow('img',img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-    linesh = cv2.HoughLinesP(erodeh,1,np.pi/180,70,hor_line_size,10)
+    linesh = cv2.HoughLinesP(erodeh,1,np.pi/180,70, HORIZONTAL_LINE_LENGTH, 10)
     linesh = remove_duplicates(linesh, 'horizontal')
 
 get_lines()
