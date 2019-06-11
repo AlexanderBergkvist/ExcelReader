@@ -19,7 +19,7 @@ ASSUME_PERFECT_GRID = True
 
 np.set_printoptions(threshold=sys.maxsize)
 pic_directory = "/home/alexander/Desktop/Projects/Ericsson/ExcelReader/pictures/"
-pic_name = "qa_test1.png"
+pic_name = "gt3.jpg"
 
 imgc, automatic = get_cropped_picture(pic_directory + pic_name)
 #imgc = rotateImage(imgc, -1.5)

@@ -141,7 +141,7 @@ def let_user_rotate(img, imgc):
         img = rotateImage(img, increment_acc, fill_color)
         imgc = rotateImage(imgc, increment_acc, fill_color)
 
-        linesv, linesh = get_lines(img, MODE_IRREGULAR_SPREADSHEET)
+        linesv, linesh = get_lines(img, MODE_PERFECT_SPREADSHEET)
         draw_lines(imgc, linesv, linesh)
         cv2.namedWindow(INFO_STRING + " CurrentStep: " + str(increment), cv2.WINDOW_NORMAL)
         cv2.imshow(INFO_STRING + " CurrentStep: " + str(increment), imgc)

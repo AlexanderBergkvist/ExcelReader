@@ -190,7 +190,7 @@ def get_lines(img, mode):
         linesh=remove_duplicates_irreg(linesh, 'horizontal')
         linesh = bunch_up_lines(linesh, 'horizontal')
     elif mode == "perfect":
-        linesh=remove_duplicates(linesh, 'horizontal') # CAUSE OF PROBLEM
+        linesh=remove_duplicates(linesh, 'horizontal')
     if not linesv is None:
         print(len(linesv))
     if not linesv is None:
